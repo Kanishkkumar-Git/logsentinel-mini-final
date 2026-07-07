@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogSentinel-Mini // console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d10;
+    --panel: #12171b;
+    --panel-border: #232b30;
+    --text: #d3dbe0;
+    --text-dim: #6b7880;
+    --brand: #2dd4bf;
+    --crit: #ff5c5c;
+    --high: #ffa94d;
+    --med: #ffd43d;
+    --low: #4dabf7;
+    --benign: #4b5960;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ---- top bar ---- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--panel-border);
+    background: linear-gradient(180deg, #0d1114, #0a0d10);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+  }
+  .brand .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 8px var(--brand);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  .brand .sub { color: var(--text-dim); font-weight: 400; font-size: 13px; }
+  .status-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .status-line .cursor {
+    display: inline-block;
+    width: 7px; height: 13px;
+    background: var(--brand);
+    margin-left: 4px;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* ---- upload panel ---- */
+  .dropzone {
+    border: 1px dashed var(--panel-border);
+    background: var(--panel);
+    border-radius: 6px;
+    padding: 40px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dropzone.drag {
+    border-color: var(--brand);
+    background: #12201d;
+  }
+  .dropzone .scan {
+    position: absolute; top: 0; left: -100%;
+    width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(45,212,191,0.08), transparent);
+    animation: sweep 2.4s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes sweep {
+    to { left: 140%; }
+  }
+  .dropzone h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    margin: 0 0 6px;
+    color: var(--text);
+  }
+  .dropzone p {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 0;
+  }
+  .dropzone input { display: none; }
+  .prompt-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--brand);
+    background: rgba(45,212,191,0.08);
+    border: 1px solid rgba(45,212,191,0.25);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 14px;
+  }
+
+  /* ---- stats row ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .stat .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 600;
+  }
+  .stat.crit .value { color: var(--crit); }
+  .stat.high .value { color: var(--high); }
+  .stat.brand .value { color: var(--brand); }
+
+  /* ---- results ---- */
+  .panel-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 28px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  tbody td {
+    padding: 11px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid #171d21;
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #161c20; }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .badge.CRITICAL { color: var(--crit); background: rgba(255,92,92,0.1); border: 1px solid rgba(255,92,92,0.35); }
+  .badge.HIGH { color: var(--high); background: rgba(255,169,77,0.1); border: 1px solid rgba(255,169,77,0.35); }
+  .badge.MEDIUM { color: var(--med); background: rgba(255,212,61,0.1); border: 1px solid rgba(255,212,61,0.35); }
+  .badge.LOW { color: var(--low); background: rgba(77,171,247,0.1); border: 1px solid rgba(77,171,247,0.35); }
+  .source-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    border: 1px solid var(--panel-border);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .ip { font-family: 'JetBrains Mono', monospace; color: var(--brand); }
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: var(--brand);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .error-note {
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--high);
+    background: rgba(255,169,77,0.07);
+    border: 1px solid rgba(255,169,77,0.25);
+    padding: 8px 12px;
+    border-radius: 4px;
+  }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    LOGSENTINEL-MINI
+    <span class="sub">/ local console</span>
+  </div>
+  <div class="status-line">rules:armed &nbsp;·&nbsp; gemini:ready<span class="cursor"></span></div>
+</header>
+
+<main>
+  <span class="prompt-tag">$ drop log file to begin analysis</span>
+  <div class="dropzone" id="dropzone">
+    <div class="scan"></div>
+    <h2 id="dz-title">DRAG LOG FILE HERE, OR CLICK TO BROWSE</h2>
+    <p id="dz-sub">.log / .txt — auth logs, syslog, sshd output</p>
+    <input type="file" id="fileInput" accept=".log,.txt">
+  </div>
+
+  <div id="loadingBox" style="display:none;" class="loading">
+    analyzing... rules pass complete, awaiting gemini response
+  </div>
+
+  <div id="errorBox"></div>
+
+  <div class="stats" id="stats" style="display:none;">
+    <div class="stat"><div class="label">Lines Scanned</div><div class="value" id="stat-lines">0</div></div>
+    <div class="stat crit"><div class="label">Critical</div><div class="value" id="stat-crit">0</div></div>
+    <div class="stat high"><div class="label">High</div><div class="value" id="stat-high">0</div></div>
+    <div class="stat brand"><div class="label">Total Findings</div><div class="value" id="stat-total">0</div></div>
+  </div>
+
+  <div id="resultsWrap" style="display:none;">
+    <div class="panel-title">
+      <span>DETECTED EVENTS</span>
+      <span id="resultsMeta"></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Type</th>
+          <th>Source IP</th>
+          <th>Summary</th>
+          <th>Recommended Action</th>
+          <th>Detected By</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>LogSentinel-Mini — rule engine + Gemini structured extraction — runs locally, no data leaves this machine except log chunks sent to Gemini</footer>
+
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const loadingBox = document.getElementById('loadingBox');
+const errorBox = document.getElementById('errorBox');
+const statsBox = document.getElementById('stats');
+const resultsWrap = document.getElementById('resultsWrap');
+const resultsBody = document.getElementById('resultsBody');
+const resultsMeta = document.getElementById('resultsMeta');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) uploadFile(fileInput.files[0]);
+});
+
+async function uploadFile(file) {
+  errorBox.innerHTML = '';
+  statsBox.style.display = 'none';
+  resultsWrap.style.display = 'none';
+  loadingBox.style.display = 'block';
+  document.getElementById('dz-title').textContent = file.name.toUpperCase();
+  document.getElementById('dz-sub').textContent = 'uploaded — analyzing...';
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+    const data = await res.json();
+    loadingBox.style.display = 'none';
+    renderResults(data);
+  } catch (err) {
+    loadingBox.style.display = 'none';
+    errorBox.innerHTML = `<div class="error-note">Request failed: ${err}</div>`;
+  }
+}
+
+function badge(sev) {
+  return `<span class="badge ${sev}">${sev}</span>`;
+}
+
+function renderResults(data) {
+  document.getElementById('dz-sub').textContent = `${data.total_lines} lines scanned — drop another file to re-run`;
+
+  const allEvents = [...(data.rule_events || []), ...(data.llm_events || [])];
+  const critCount = allEvents.filter(e => e.severity === 'CRITICAL').length;
+  const highCount = allEvents.filter(e => e.severity === 'HIGH').length;
+
+  document.getElementById('stat-lines').textContent = data.total_lines;
+  document.getElementById('stat-crit').textContent = critCount;
+  document.getElementById('stat-high').textContent = highCount;
+  document.getElementById('stat-total').textContent = allEvents.length;
+  statsBox.style.display = 'grid';
+
+  resultsMeta.textContent = `${data.rule_events.length} via rules · ${data.llm_events.length} via gemini · ${data.llm_lines_reviewed} lines sent to LLM`;
+
+  if (data.llm_error) {
+    errorBox.innerHTML = `<div class="error-note">Gemini layer skipped: ${data.llm_error} — set GEMINI_API_KEY to enable AI-based detection.</div>`;
+  }
+
+  if (allEvents.length === 0) {
+    resultsBody.innerHTML = '';
+    resultsWrap.style.display = 'block';
+    resultsBody.innerHTML = `<tr><td colspan="6" class="empty-state">No findings — nothing suspicious detected in this file.</td></tr>`;
+    return;
+  }
+
+  resultsBody.innerHTML = allEvents.map((e, i) => {
+    const source = (data.rule_events.includes(e)) ? 'rule' : 'gemini';
+    return `
+      <tr>
+        <td>${badge(e.severity)}</td>
+        <td class="mono">${e.event_type}</td>
+        <td class="ip">${e.source_ip || '—'}</td>
+        <td>${e.summary}</td>
+        <td style="color:var(--text-dim)">${e.recommended_action}</td>
+        <td><span class="source-tag">${source}</span></td>
+      </tr>`;
+  }).join('');
+  resultsWrap.style.display = 'block';
+}
+</script>
+
+</body>
+</html>

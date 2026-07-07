@@ -1,0 +1,10 @@
+Jun 14 15:16:01 combo sshd(pam_unix)[19939]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4
+Jun 14 15:16:02 combo sshd(pam_unix)[19937]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 user=root
+Jun 14 15:16:15 combo sshd(pam_unix)[19940]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 user=root
+Jun 14 15:16:40 combo sshd(pam_unix)[19941]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 user=admin
+Jun 14 15:17:05 combo sshd(pam_unix)[19942]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=218.188.2.4 user=admin
+Jun 14 15:20:11 combo sshd(pam_unix)[19950]: Accepted password for deploy from 10.0.0.5 port 51322 ssh2
+Jun 14 15:22:33 combo sshd(pam_unix)[19955]: session opened for user deploy by (uid=0)
+Jun 15 02:04:59 combo sshd(pam_unix)[20882]: authentication failure; logname= uid=0 euid=0 tty=NODEVssh ruser= rhost=91.203.5.10 user=root
+Jun 15 02:05:02 combo sudo: deploy : TTY=pts/0 ; PWD=/home/deploy ; USER=root ; COMMAND=/bin/chmod 4755 /tmp/.hidden/backdoor
+Jun 15 02:05:10 combo sshd(pam_unix)[20890]: Failed password for invalid user oracle from 91.203.5.10 port 44012 ssh2

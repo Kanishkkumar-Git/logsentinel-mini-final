@@ -1,0 +1,82 @@
+<svg viewBox="0 0 1000 460" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #0a0d10; }
+      .panel { fill: #12171b; stroke: #232b30; stroke-width: 1.5; }
+      .panel-title { fill: #6b7880; font: 600 11px 'JetBrains Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+      .label { fill: #d3dbe0; font: 500 14px 'JetBrains Mono', monospace; }
+      .sub { fill: #6b7880; font: 400 11px 'IBM Plex Sans', sans-serif; }
+      .arrow { stroke: #2dd4bf; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .brand { fill: #2dd4bf; }
+      .crit { fill: #ff5c5c; }
+      .high { fill: #ffa94d; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2dd4bf"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1000" height="460"/>
+
+  <!-- Log source -->
+  <rect class="panel" x="30" y="190" width="150" height="80" rx="6"/>
+  <text class="panel-title" x="105" y="210" text-anchor="middle">input</text>
+  <text class="label" x="105" y="235" text-anchor="middle">raw logs</text>
+  <text class="sub" x="105" y="253" text-anchor="middle">sshd / syslog</text>
+
+  <path class="arrow" d="M180,230 L228,230"/>
+
+  <!-- Rules layer -->
+  <rect class="panel" x="230" y="130" width="190" height="100" rx="6"/>
+  <circle class="brand" cx="248" cy="150" r="4"/>
+  <text class="panel-title" x="260" y="154">layer 1 · rules</text>
+  <text class="label" x="248" y="182">Brute-force</text>
+  <text class="label" x="248" y="202">correlation</text>
+  <text class="sub" x="248" y="220">instant · zero API cost</text>
+
+  <!-- LLM layer -->
+  <rect class="panel" x="230" y="250" width="190" height="100" rx="6"/>
+  <circle class="brand" cx="248" cy="270" r="4"/>
+  <text class="panel-title" x="260" y="274">layer 2 · gemini</text>
+  <text class="label" x="248" y="302">Structured</text>
+  <text class="label" x="248" y="322">extraction</text>
+  <text class="sub" x="248" y="340">novel / ambiguous events</text>
+
+  <path class="arrow" d="M420,180 L468,180 L468,225"/>
+  <path class="arrow" d="M420,300 L468,300 L468,255"/>
+  <text class="sub" x="425" y="175">resolved lines</text>
+  <text class="sub" x="425" y="318">leftover lines</text>
+
+  <!-- Storage -->
+  <rect class="panel" x="470" y="190" width="160" height="80" rx="6"/>
+  <text class="panel-title" x="550" y="210" text-anchor="middle">storage</text>
+  <text class="label" x="550" y="235" text-anchor="middle">SQLite</text>
+  <text class="sub" x="550" y="253" text-anchor="middle">events.db</text>
+
+  <path class="arrow" d="M630,230 L678,230"/>
+
+  <!-- Split to web + alerts -->
+  <rect class="panel" x="680" y="110" width="180" height="90" rx="6"/>
+  <text class="panel-title" x="770" y="132" text-anchor="middle">interface</text>
+  <text class="label" x="770" y="158" text-anchor="middle">Web dashboard</text>
+  <text class="sub" x="770" y="176" text-anchor="middle">FastAPI + browser UI</text>
+
+  <rect class="panel" x="680" y="260" width="180" height="90" rx="6"/>
+  <text class="panel-title" x="770" y="282" text-anchor="middle">alerting</text>
+  <text class="label" x="770" y="308" text-anchor="middle">Telegram</text>
+  <text class="sub" x="770" y="326" text-anchor="middle">on CRITICAL severity</text>
+
+  <path class="arrow" d="M655,230 Q665,230 665,190 L678,155"/>
+  <path class="arrow" d="M655,230 Q665,230 665,270 L678,305"/>
+
+  <!-- Severity legend -->
+  <g transform="translate(30,380)">
+    <text class="panel-title" x="0" y="0">severity</text>
+    <circle class="crit" cx="6" cy="24" r="5"/>
+    <text class="sub" x="18" y="28">critical</text>
+    <circle class="high" cx="90" cy="24" r="5"/>
+    <text class="sub" x="102" y="28">high</text>
+  </g>
+
+  <text class="sub" x="500" y="440" text-anchor="middle">rules resolve what they can cheaply — gemini only sees what's left</text>
+</svg>
