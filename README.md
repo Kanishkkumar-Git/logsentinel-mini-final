@@ -15,7 +15,7 @@ declarative-extraction pattern used in production tools like LogSentinelAI.
 
 ## 🎥 Demo Video
 
-[![Watch Demo](images/demo.png)](https://drive.google.com/file/d/1puohpvMQCi456AJWpGhi-DtvOroUDMD9/view?usp=sharing)
+[![Watch Demo](img/demo.png)](https://drive.google.com/file/d/1puohpvMQCi456AJWpGhi-DtvOroUDMD9/view?usp=sharing)
 
 ## Why layered detection?
 
